@@ -1,0 +1,31 @@
+models:
+  - name: stg_purchase_from_raw
+    tests:
+      - dbt_expectations.expect_table_column_count_to_equal:
+          value: 4
+    columns:
+      - name: id
+        description: Uint32
+        tests:
+          - unique
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_of_type:
+              column_type: Uint32
+      - name: user_id
+        description: Uint32
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_of_type:
+              column_type: Uint32
+      - name: transaction_at
+        description: DateTime
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_of_type:
+              column_type: DateTime
+      - name: amount
+        description: Decimal(18, 2)
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_of_type:
+              column_type: Decimal(18, 2)

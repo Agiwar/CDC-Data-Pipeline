@@ -1,0 +1,4 @@
+ARG DEBEZIUM_VERSION="2.3"
+FROM debezium/connect:${DEBEZIUM_VERSION}
+
+COPY debezium/build/clickhouse-kafka-connect/kafka-connect-plugins /kafka/libs

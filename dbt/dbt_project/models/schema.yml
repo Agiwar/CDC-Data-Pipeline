@@ -1,0 +1,92 @@
+sources:
+  - name: ods
+    tables:
+      - name: PurchaseMain
+
+models:
+  - name: stg_purchase_agg
+    tests:
+      - dbt_expectations.expect_table_column_count_to_equal:
+          value: 4
+    columns:
+      - name: user_id
+        description: Int64
+        tests:
+          - unique
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_of_type:
+              column_type: Int64
+      - name: first_transaction_at
+        description: DateTime
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_of_type:
+              column_type: DateTime
+      - name: num_of_transaction
+        description: UInt64
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_of_type:
+              column_type: UInt64
+      - name: total_amount
+        description: Decimal(38, 2)
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_of_type:
+              column_type: Decimal(38, 2)
+
+  - name: ods_first_purchase
+    tests:
+      - dbt_expectations.expect_table_column_count_to_equal:
+          value: 8
+    columns:
+      - name: user_id
+        description: Int64
+        tests:
+          - unique
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_of_type:
+              column_type: Int64
+      - name: first_purchase_id
+        description: Int64
+        tests:
+          - unique
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_of_type:
+              column_type: Int64
+      - name: first_transaction_at
+        description: DateTime64(3)
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_of_type:
+              column_type: DateTime64(3)
+      - name: num_of_transaction
+        description: UInt64
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_of_type:
+              column_type: UInt64
+      - name: total_amount
+        description: Decimal(38, 2)
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_of_type:
+              column_type: Decimal(38, 2)
+      - name: store_id
+        description: Int64
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_of_type:
+              column_type: Int64
+      - name: pay_type
+        description: Int32
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_of_type:
+              column_type: Int32
+      - name: purchase_type
+        description: Int32
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_of_type:
+              column_type: Int32

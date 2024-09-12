@@ -1,0 +1,19 @@
+ARG build_for=linux/amd64
+FROM --platform=${build_for} python:3.10-slim-bullseye
+
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+        ssh \
+        software-properties-common \
+        build-essential \
+        ca-certificates \
+        libpq-dev
+
+WORKDIR /usr/src/dbt
+
+COPY dbt/build/requirements.txt .
+
+RUN pip install --upgrade pip && \
+    pip install -r requirements.txt 
+
+ENTRYPOINT ["tail", "-f", "/dev/null"]

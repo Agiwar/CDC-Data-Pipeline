@@ -1,0 +1,11 @@
+dbt_clickhouse_profile:
+  target: dev
+  outputs:
+    dev:
+      type: clickhouse
+      schema: public
+      host: clickhouse
+      port: 8123
+      user: jeffrey
+      password: '0000'
+      secure: False

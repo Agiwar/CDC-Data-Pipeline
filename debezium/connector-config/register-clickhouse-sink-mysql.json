@@ -1,0 +1,24 @@
+{
+    "name": "clickhouse-sink-mysql",
+    "config": {
+        "connector.class": "com.clickhouse.kafka.connect.ClickHouseSinkConnector",
+        "hostname": "clickhouse",
+        "port": "8123",
+        "username": "jeffrey",
+        "password": "0000",
+        "database": "ods",
+        "topics": "auth_pay_setting_history_tab",
+        "batch.size": "100000",
+        "tasks.max": "1",
+        "key.converter": "io.apicurio.registry.utils.converter.AvroConverter",
+        "key.converter.apicurio.registry.url": "http://apicurio:8080/apis/registry/v2",
+        "key.converter.apicurio.registry.auto-register": "true",
+        "key.converter.apicurio.registry.find-latest": "true",
+        "value.converter": "io.apicurio.registry.utils.converter.AvroConverter",
+        "value.converter.apicurio.registry.url": "http://apicurio:8080/apis/registry/v2",
+        "value.converter.apicurio.registry.auto-register": "true",
+        "value.converter.apicurio.registry.find-latest": "true",
+        "schema.name.adjustment.mode": "avro",
+        "field.name.adjustment.mode": "avro"
+    }
+}
