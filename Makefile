@@ -7,19 +7,19 @@ start_containers:
 	sleep 120
 
 register_sqlserver:
-	curl -i -X POST -H "Accept:application/json" -H "Content-Type:application/json" http://localhost:8083/connectors/ -d @debezium/connector-config/register-sqlserver-apicurio-converter-avro.json
+	curl -i -X POST -H "Accept:application/json" -H "Content-Type:application/json" http://localhost:8083/connectors/ -d @debezium/connector-registration/register-sqlserver-apicurio-converter-avro.json
 	sleep 30
 
 register_mysql:
-	curl -i -X POST -H "Accept:application/json" -H "Content-Type:application/json" http://localhost:8083/connectors/ -d @debezium/connector-config/register-mysql-apicurio-converter-avro.json
+	curl -i -X POST -H "Accept:application/json" -H "Content-Type:application/json" http://localhost:8083/connectors/ -d @debezium/connector-registration/register-mysql-apicurio-converter-avro.json
 	sleep 30
 
 register_clickhouse_sqlserver:
-	curl -i -X POST -H "Accept:application/json" -H "Content-Type:application/json" http://localhost:8083/connectors/ -d @debezium/connector-config/register-clickhouse-sink-sqlserver.json
+	curl -i -X POST -H "Accept:application/json" -H "Content-Type:application/json" http://localhost:8083/connectors/ -d @debezium/connector-registration/register-clickhouse-sink-sqlserver.json
 	sleep 120
 
 register_clickhouse_mysql:
-	curl -i -X POST -H "Accept:application/json" -H "Content-Type:application/json" http://localhost:8083/connectors/ -d @debezium/connector-config/register-clickhouse-sink-mysql.json
+	curl -i -X POST -H "Accept:application/json" -H "Content-Type:application/json" http://localhost:8083/connectors/ -d @debezium/connector-registration/register-clickhouse-sink-mysql.json
 	sleep 60
 
 dbt_deps:
