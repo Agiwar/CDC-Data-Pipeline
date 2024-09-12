@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # CDC Data-Pipeline
 
 ## Concept
@@ -25,6 +24,3 @@ Avoid always hardcoding SQL code, use `dbt` tool to do data transformation. This
 ```bash
 make all
 ```
-=======
-# CDC-Data-Pipeline
->>>>>>> 065f5a79fd068295412b9469320ef3eb0e285be7
