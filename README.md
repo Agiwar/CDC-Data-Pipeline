@@ -24,3 +24,6 @@ Avoid always hardcoding SQL code, use `dbt` tool to do data transformation. This
 ```bash
 make all
 ```
+
+## Diagram
+![CDC Data Pipeline](data-pipeline-diagram/data-pipeline-diagram.jpg)
