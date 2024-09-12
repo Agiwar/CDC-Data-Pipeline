@@ -1,0 +1,135 @@
+services:
+
+  zookeeper:
+    container_name: zookeeper
+    image: debezium/zookeeper:${DEBEZIUM_VERSION}
+    ports:
+      - 2181:2181
+      - 2888:2888
+      - 3888:3888
+
+  kafka:
+    container_name: kafka
+    image: debezium/kafka:${DEBEZIUM_VERSION}
+    ports:
+      - 9092:9092
+    links:
+      - zookeeper
+    environment:
+      - ZOOKEEPER_CONNECT=zookeeper:2181
+
+  apicurio:
+    container_name: apicurio
+    image: apicurio/apicurio-registry-mem:2.4.1.Final
+    ports:
+      - 8080:8080
+
+  debezium:
+    container_name: debezium
+    # image: quay.io/debezium/connect:${DEBEZIUM_VERSION}
+    build:
+      context: .
+      dockerfile: debezium/build/clickhouse-kafka-connect/Dockerfile.debezium
+    image: my_debezium:latest
+    ports:
+      - 8083:8083
+    links:
+      - kafka
+      - apicurio
+    environment:
+      - BOOTSTRAP_SERVERS=kafka:9092
+      - GROUP_ID=1
+      - CONFIG_STORAGE_TOPIC=connect_configs
+      - OFFSET_STORAGE_TOPIC=connect_offsets
+      - STATUS_STORAGE_TOPIC=connect_statuses
+      - ENABLE_APICURIO_CONVERTERS=true
+
+  kafka-ui:
+    container_name: kafka-ui
+    image: provectuslabs/kafka-ui:latest
+    ports:
+      - 8811:8080
+    links:
+      - kafka
+    environment:
+      - KAFKA_CLUSTERS_0_NAME=cdc-data-pipeline
+      - KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS=kafka:9092
+
+  sqlcmd:
+    container_name: sqlcmd
+    image: mcr.microsoft.com/mssql-tools:latest
+    depends_on:
+      - sqlserver
+    volumes:
+      - ./scripts/init_sqlserver.sh:/init_sqlserver.sh
+      - ./scripts/init_sqlserver_table_PurchaseMain.sql:/init_PurchaseMain.sql
+    command: ["/bin/bash", "/init_sqlserver.sh"]
+
+  sqlserver:
+    container_name: sqlserver
+    image: mcr.microsoft.com/azure-sql-edge:latest
+    environment:
+      - ACCEPT_EULA=Y
+      - MSSQL_SA_PASSWORD=Password!
+    ports:
+      - 1433:1433
+    volumes:
+      - ./data/staging-data/PurchaseMain.csv:/var/opt/sqlserver/data/PurchaseMain.csv
+
+  mysql:
+    container_name: mysql
+    image: mysql:8.0
+    environment:
+      - MYSQL_ROOT_PASSWORD=rootpassword
+      - MYSQL_USER=mysqluser
+      - MYSQL_PASSWORD=mysqlpw
+    ports:
+      - 3306:3306
+    volumes:
+      - ./data/staging-data/auth_pay_setting_history_tab.csv:/var/lib/mysql-files/auth_pay_setting_history_tab.csv
+      - ./scripts/init_mysql_table_auth_pay_setting_history_tab.sql:/docker-entrypoint-initdb.d/init_auth_pay_setting_history_tab.sql
+    command:
+      - --default-authentication-plugin=mysql_native_password
+      - --local_infile=1
+
+  clickhouse:
+    container_name: clickhouse
+    image: clickhouse/clickhouse-server:latest
+    environment:
+      - CLICKHOUSE_USER=jeffrey
+      - CLICKHOUSE_PASSWORD=0000
+      - CLICKHOUSE_DB=public
+    volumes:
+      - ./scripts/init_clickhouse_ods_layer.sql:/docker-entrypoint-initdb.d/init_clickhouse.sql
+      - ./clickhouse:/var/lib/clickhouse
+    ports:
+      - "8123:8123"
+      - "9000:9000"
+  
+  tabix:
+    container_name: tabix
+    image: spoonest/clickhouse-tabix-web-client:latest
+    platform: linux/amd64
+    ports:
+      - "8081:80"
+    depends_on:
+      - clickhouse
+    restart: unless-stopped
+    environment:
+      - CH_NAME=clickhouse
+      - CH_HOST=http://localhost:8123
+      - CH_LOGIN=jeffrey
+      - CH_PASSWORD=0000
+  
+  dbt:
+    container_name: dbt
+    build:
+      context: .
+      dockerfile: dbt/build/Dockerfile.dbt
+    image: my_dbt:latest
+    platform: linux/amd64
+    volumes:
+      - ./dbt/dbt_project:/usr/src/dbt
+      - ./dbt/dbt_project/profiles/profiles.yml:/root/.dbt/profiles.yml
+    depends_on:
+      - clickhouse
