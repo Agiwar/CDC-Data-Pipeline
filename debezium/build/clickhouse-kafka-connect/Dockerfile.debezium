@@ -1,4 +1,6 @@
-ARG DEBEZIUM_VERSION="2.3"
+ARG DEBEZIUM_VERSION="2.7"
 FROM debezium/connect:${DEBEZIUM_VERSION}
 
-COPY debezium/build/clickhouse-kafka-connect/kafka-connect-plugins /kafka/libs
+RUN mkdir -p /kafka/connect
+
+COPY debezium/build/clickhouse-kafka-connect/kafka-connect-plugins/clickhouse-kafka-connect-v1.2.0-confluent.jar /kafka/connect/
