@@ -22,7 +22,7 @@ CREATE TABLE IF NOT EXISTS auth_pay_setting_history_tab (
   KEY                         `auth_pay_history_update_time_idx` (`update_time`)
 ) ENGINE=InnoDB AUTO_INCREMENT=10062 DEFAULT CHARSET=utf8mb4;
 
-LOAD DATA INFILE '/var/lib/mysql-files/auth_pay_setting_history_tab.csv'
+LOAD DATA INFILE '/var/lib/mysql-files/staging-data/auth_pay_setting_history_tab.csv'
 INTO TABLE auth_pay_setting_history_tab
 FIELDS TERMINATED BY ','
 ENCLOSED BY '"'

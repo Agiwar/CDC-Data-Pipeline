@@ -75,7 +75,7 @@ GO
 
 
 BULK INSERT dbo.PurchaseMain
-FROM '/var/opt/sqlserver/data/PurchaseMain.csv'
+FROM '/var/opt/mssql-files/staging-data/PurchaseMain.csv'
 WITH (
     DATAFILETYPE = 'widechar',
     FIELDTERMINATOR = ',',
