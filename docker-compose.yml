@@ -18,9 +18,20 @@ services:
     environment:
       - ZOOKEEPER_CONNECT=zookeeper:2181
 
+  kafka-ui:
+    container_name: kafka-ui
+    image: provectuslabs/kafka-ui:latest
+    ports:
+      - 8811:8080
+    links:
+      - kafka
+    environment:
+      - KAFKA_CLUSTERS_0_NAME=cdc-data-pipeline
+      - KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS=kafka:9092
+
   apicurio:
     container_name: apicurio
-    image: apicurio/apicurio-registry-mem:2.4.1.Final
+    image: apicurio/apicurio-registry-mem:latest-release
     ports:
       - 8080:8080
 
@@ -39,31 +50,11 @@ services:
     environment:
       - BOOTSTRAP_SERVERS=kafka:9092
       - GROUP_ID=1
-      - CONFIG_STORAGE_TOPIC=connect_configs
-      - OFFSET_STORAGE_TOPIC=connect_offsets
-      - STATUS_STORAGE_TOPIC=connect_statuses
+      - CONFIG_STORAGE_TOPIC=kafka_connect_configs
+      - OFFSET_STORAGE_TOPIC=kafka_connect_offsets
+      - STATUS_STORAGE_TOPIC=kafka_connect_statuses
       - ENABLE_APICURIO_CONVERTERS=true
-
-  kafka-ui:
-    container_name: kafka-ui
-    image: provectuslabs/kafka-ui:latest
-    ports:
-      - 8811:8080
-    links:
-      - kafka
-    environment:
-      - KAFKA_CLUSTERS_0_NAME=cdc-data-pipeline
-      - KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS=kafka:9092
-
-  sqlcmd:
-    container_name: sqlcmd
-    image: mcr.microsoft.com/mssql-tools:latest
-    depends_on:
-      - sqlserver
-    volumes:
-      - ./scripts/init_sqlserver.sh:/init_sqlserver.sh
-      - ./scripts/init_sqlserver_table_PurchaseMain.sql:/init_PurchaseMain.sql
-    command: ["/bin/bash", "/init_sqlserver.sh"]
+      - KAFKA_CONNECT_PLUGINS_DIR=/kafka/connect/
 
   sqlserver:
     container_name: sqlserver
@@ -74,7 +65,18 @@ services:
     ports:
       - 1433:1433
     volumes:
-      - ./data/staging-data/PurchaseMain.csv:/var/opt/sqlserver/data/PurchaseMain.csv
+      - ./data/staging-data/PurchaseMain.csv:/var/opt/mssql-files/staging-data/PurchaseMain.csv
+      - ./sqlserver:/var/opt/mssql
+
+  sqlcmd:
+    container_name: sqlcmd
+    image: mcr.microsoft.com/mssql-tools:latest
+    depends_on:
+      - sqlserver
+    volumes:
+      - ./scripts/init_sqlserver_table_PurchaseMain.sql:/init_PurchaseMain.sql
+      - ./scripts/init_sqlserver.sh:/init_sqlserver.sh
+    command: ["/bin/bash", "/init_sqlserver.sh"]
 
   mysql:
     container_name: mysql
@@ -86,10 +88,11 @@ services:
     ports:
       - 3306:3306
     volumes:
-      - ./data/staging-data/auth_pay_setting_history_tab.csv:/var/lib/mysql-files/auth_pay_setting_history_tab.csv
+      - ./data/staging-data/auth_pay_setting_history_tab.csv:/var/lib/mysql-files/staging-data/auth_pay_setting_history_tab.csv
       - ./scripts/init_mysql_table_auth_pay_setting_history_tab.sql:/docker-entrypoint-initdb.d/init_auth_pay_setting_history_tab.sql
+      - ./mysql:/var/lib/mysql
     command:
-      - --default-authentication-plugin=mysql_native_password
+      - --authentication_policy=mysql_native_password
       - --local_infile=1
 
   clickhouse:
