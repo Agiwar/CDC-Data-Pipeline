@@ -5,7 +5,7 @@ USE JKOPay;
 GO
 
 CREATE TABLE [dbo].[PurchaseMain](
-	[ID] [bigint] IDENTITY(1,1) NOT FOR REPLICATION NOT NULL,
+	[ID] [bigint] IDENTITY(1,1) NOT FOR REPLICATION NOT NULL PRIMARY KEY,
 	[PurchaseNo] [nvarchar](50) NULL,
 	[PurchaseType] [int] NOT NULL,
 	[PayType] [int] NOT NULL,
