@@ -34,7 +34,7 @@ CREATE TABLE IF NOT EXISTS PurchaseMain (
 	PayCode           Nullable(String),
 	CoinRate          Nullable(Int32),
 	Redeem            Nullable(Int32),
-	BenefitRedeem     Int32,
+	BenefitRedeem     Nullable(Int32),
 	PayBack           decimal(18, 2),
 	StandingPayBack   Nullable(decimal(18, 2)),
 	BenefitPayBack    decimal(18, 2),
