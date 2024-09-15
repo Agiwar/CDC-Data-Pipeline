@@ -58,7 +58,8 @@ services:
 
   sqlserver:
     container_name: sqlserver
-    image: mcr.microsoft.com/azure-sql-edge:latest
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    platform: linux/amd64  
     environment:
       - ACCEPT_EULA=Y
       - MSSQL_SA_PASSWORD=Password!
@@ -71,6 +72,7 @@ services:
   sqlcmd:
     container_name: sqlcmd
     image: mcr.microsoft.com/mssql-tools:latest
+    platform: linux/amd64  
     depends_on:
       - sqlserver
     volumes:
