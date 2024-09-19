@@ -66,5 +66,5 @@ cd CDC-Data-Pipeline
 make all
 ```
 
-<!-- ## Diagram
-![CDC Data Pipeline](data-pipeline-diagram/data-pipeline-diagram.jpg) -->
+## Diagram
+![CDC Data Pipeline](data-pipeline-diagram/data-pipeline-diagram.jpg)
